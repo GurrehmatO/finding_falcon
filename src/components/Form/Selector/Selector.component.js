@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Select, { components } from 'react-select';
-// import { Button } from 'react-bootstrap';
 import propTypes from 'prop-types';
 import { DESTINATION } from '../../../constants/strings';
 import './Selector.component.scss';
@@ -80,7 +79,7 @@ class Selector extends Component {
 
   render() {
     const {
-      planets, vehicles, index, selected,
+      planets, index,
     } = this.props;
     const planetOptions = planets.map(planet => ({
       value: planet.name,
