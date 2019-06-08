@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Button } from 'react-bootstrap';
 import Axios from 'axios';
+import PropTypes from 'prop-types';
 import { GET_PLANETS, GET_VEHICLES, POST_TOKEN } from '../../constants/urls';
 import { SUBMIT, TIME_TAKEN } from '../../constants/strings';
 import './Form.component.scss';
@@ -51,16 +52,20 @@ class Form extends Component {
   }
 
   getTime = () => {
+    const { updateTime, time } = this.props;
     const { planets, vehicles, selected } = this.state;
     const filteredSelected = selected.filter(selection => !(Object.values(selection).some(value => (value === ''))));
-    const time = filteredSelected.reduce((totalTime, selection) => {
+    const newTime = filteredSelected.reduce((totalTime, selection) => {
       const { distance } = planets
         .find(planet => ((planet.name === selection.planet) ? planet : undefined));
       const { speed } = vehicles
         .find(vehicle => ((vehicle.name === selection.vehicle) ? vehicle : undefined));
       return (totalTime + (distance / speed));
     }, 0);
-    return time;
+    if (newTime !== time) {
+      updateTime({ time: newTime });
+    }
+    return newTime;
   }
 
   isSubmitDisabled = () => {
@@ -69,27 +74,20 @@ class Form extends Component {
   }
 
   onSubmit = async () => {
+    const { confirmTravel } = this.props;
     const { selected } = this.state;
-    const options = {
-      method: 'POST',
-      headers: { Accept: 'application/json' },
-      data: {},
-      url: POST_TOKEN,
-    };
-    const { data: { token } } = await Axios(options);
-    const requestBody = selected.reduce((acc, curr, index) => {
+    const travel = selected.reduce((acc, curr, index) => {
       acc.planet_names[index] = curr.planet;
       acc.vehicle_names[index] = curr.vehicle;
       return acc;
     }, {
-      token,
       planet_names: ['', '', '', ''],
       vehicle_names: ['', '', '', ''],
     });
+    confirmTravel({ travel });
   }
 
   render() {
-    this.getTime();
     const { planets, vehicles, selected } = this.state;
     return (
       <div className="formAndSubmit">
@@ -124,5 +122,11 @@ class Form extends Component {
     );
   }
 }
+
+Form.propTypes = {
+  updateTime: PropTypes.func.isRequired,
+  time: PropTypes.number.isRequired,
+  confirmTravel: PropTypes.func.isRequired,
+};
 
 export default Form;
