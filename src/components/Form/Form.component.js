@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import { Button } from 'react-bootstrap';
 import Axios from 'axios';
 import PropTypes from 'prop-types';
-import { GET_PLANETS, GET_VEHICLES, POST_TOKEN } from '../../constants/urls';
+import { GET_PLANETS, GET_VEHICLES } from '../../constants/urls';
 import { SUBMIT, TIME_TAKEN } from '../../constants/strings';
 import './Form.component.scss';
 import Selector from './Selector/Selector.component';
@@ -74,7 +74,7 @@ class Form extends Component {
   }
 
   onSubmit = async () => {
-    const { confirmTravel } = this.props;
+    const { confirmTravel, history } = this.props;
     const { selected } = this.state;
     const travel = selected.reduce((acc, curr, index) => {
       acc.planet_names[index] = curr.planet;
@@ -85,6 +85,7 @@ class Form extends Component {
       vehicle_names: ['', '', '', ''],
     });
     confirmTravel({ travel });
+    history.push('/result');
   }
 
   render() {
@@ -127,6 +128,7 @@ Form.propTypes = {
   updateTime: PropTypes.func.isRequired,
   time: PropTypes.number.isRequired,
   confirmTravel: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
 export default Form;
